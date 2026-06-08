@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     const data = await res.json().catch(() => null)
 
     if (!res.ok) {
-      let message = data?.message ?? data?.error
+      let message: string
 
       if (res.status === 403) {
         message = 'Verification service is temporarily busy. Please try again in a moment.'
@@ -83,8 +83,8 @@ export async function POST(req: NextRequest) {
         message = 'Too many requests. Please wait a few moments and try again.'
       } else if (res.status >= 500) {
         message = 'Verification service is experiencing issues. Please try again shortly.'
-      } else if (!message) {
-        message = 'Unable to verify NIN at this time. Please try again.'
+      } else {
+        message = data?.message ?? data?.error ?? 'Unable to verify NIN at this time. Please try again.'
       }
 
       return NextResponse.json({ error: message }, { status: res.status === 404 ? 404 : 502 })
